@@ -1,65 +1,49 @@
 import 'package:flutter/material.dart';
+import '../widgets/custom_app_bar.dart'; // Import NavBarCustom
 
-class NewsArticle extends StatelessWidget {
+class NewsScreen extends StatelessWidget {
+  const NewsScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('VN|EN'),
-            Image.asset('assets/logo.png', height: 30),
-            IconButton(
-              icon: Icon(Icons.person_outline),
-              onPressed: () {},
-            ),
-          ],
-        ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(106), // Tổng chiều cao của AppBar và thanh màu xanh
+        child: NavBarCustom(), // Sử dụng widget NavBarCustom
       ),
-      body: SingleChildScrollView(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(16),
-              color: Color(0xFF1E4B8E),
-              child: Text(
-                'TIN TỨC',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+            // Hình ảnh
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                'assets/logo-hutech.png', // Đường dẫn hình ảnh
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
             ),
-            Image.asset(
-              'assets/speaker.jpg',
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'CHƯƠNG TRÌNH LỄ KỶ NIỆM 30 NĂM XÂY DỰNG VÀ PHÁT TRIỂN PHONG TRÀO HIẾN MÁU TÌNH NGUYỆN THÀNH PHỐ HỒ CHÍ MINH GIAI ĐOẠN(1994-2024)',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    'Sáng 22/11, Ban chỉ đạo vận động hiến máu tình nguyện TPHCM tổ chức họp mặt kỷ niệm 30 năm xây dựng và phát triển phong trào hiến máu tình nguyện TPHCM (1994-2024)',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
+            const SizedBox(height: 16),
+            // Tiêu đề bài viết
+            const Text(
+              "CHƯƠNG TRÌNH LỄ KỶ NIỆM 30 NĂM XÂY DỰNG VÀ PHÁT TRIỂN "
+                  "PHONG TRÀO HIẾN MÁU TÌNH NGUYỆN THÀNH PHỐ HỒ CHÍ MINH "
+                  "GIAI ĐOẠN (1994-2024)",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
               ),
+            ),
+            const SizedBox(height: 8),
+            // Nội dung mô tả
+            const Text(
+              "Sáng 22/11, Ban chỉ đạo vận động hiến máu tình nguyện TPHCM tổ chức "
+                  "họp mặt kỷ niệm 30 năm xây dựng và phát triển phong trào hiến máu tình "
+                  "nguyện TPHCM (1994-2024).",
+              style: TextStyle(fontSize: 16),
             ),
           ],
         ),
