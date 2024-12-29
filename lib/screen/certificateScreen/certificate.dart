@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/footer_widget.dart';
+import 'dart:ui';
 
 class CertificateScreen extends StatelessWidget {
   const CertificateScreen({Key? key}) : super(key: key);
@@ -15,7 +16,6 @@ class CertificateScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Nội dung chính
             Stack(
               children: [
                 // Background Image
@@ -23,8 +23,15 @@ class CertificateScreen extends StatelessWidget {
                   child: Image.asset(
                     'assets/chungNhan.png',
                     fit: BoxFit.cover,
-                    color: Colors.blueAccent.withOpacity(0.5),
-                    colorBlendMode: BlendMode.darken,
+                  ),
+                ),
+                // Blur overlay
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                    child: Container(
+                      color: Colors.blueAccent.withOpacity(0.2),
+                    ),
                   ),
                 ),
                 // Content
@@ -32,7 +39,7 @@ class CertificateScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.7, // Chiều cao tăng
+                      height: MediaQuery.of(context).size.height * 0.8,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
