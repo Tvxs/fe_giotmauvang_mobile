@@ -1,12 +1,12 @@
 import 'package:fe_giotmauvang_mobile/widgets/footer_widget.dart';
 import 'package:flutter/material.dart';
-import '../widgets/custom_app_bar.dart';
-import '../widgets/banner_widget.dart';
-import '../widgets/carousel_widget.dart';
-import '../widgets/standards_widget.dart';
-import '../widgets/notes_widget.dart';
-import '../widgets/advice_widget.dart';
-import '../widgets/activities_widget.dart';
+import '../../widgets/custom_app_bar.dart';
+import 'banner_widget.dart';
+import 'carousel_widget.dart';
+import 'standards_widget.dart';
+import 'notes_widget.dart';
+import 'advice_widget.dart';
+import 'activities_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
