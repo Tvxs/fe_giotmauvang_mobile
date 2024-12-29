@@ -1,6 +1,7 @@
 import 'package:fe_giotmauvang_mobile/screen/homeScreen/home.dart';
 import 'package:flutter/material.dart';
 import '../screen/newsScreen/news.dart';
+import '../screen/certificateScreen/certificate.dart';
 
 class NavBarCustom extends StatefulWidget {
   const NavBarCustom({Key? key}) : super(key: key);
@@ -50,7 +51,15 @@ class _NavBarCustomState extends State<NavBarCustom> {
                     }),
                     _buildMenuItem('Đăng ký hiến máu'),
                     _buildMenuItem('Lịch sử hiến máu'),
-                    _buildMenuItem('Chứng nhận'),
+                    _buildMenuItem('Chứng nhận', onTap: () {
+                      _hideMenu();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CertificateScreen(),
+                        ),
+                      );
+                    }),
                     _buildMenuItem('Hỏi đáp'),
                     _buildMenuItem('Tin tức', onTap: () {
                       _hideMenu();
