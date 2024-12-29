@@ -1,3 +1,4 @@
+import 'package:fe_giotmauvang_mobile/screen/QandA/QA.dart';
 import 'package:fe_giotmauvang_mobile/screen/homeScreen/home.dart';
 import 'package:flutter/material.dart';
 import '../screen/newsScreen/news.dart';
@@ -60,7 +61,15 @@ class _NavBarCustomState extends State<NavBarCustom> {
                         ),
                       );
                     }),
-                    _buildMenuItem('Hỏi đáp'),
+                    _buildMenuItem('Hỏi đáp', onTap: () {
+                      _hideMenu();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const QAScreen(),
+                        ),
+                      );
+                    }),
                     _buildMenuItem('Tin tức', onTap: () {
                       _hideMenu();
                       Navigator.push(
