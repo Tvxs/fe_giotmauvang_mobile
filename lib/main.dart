@@ -18,7 +18,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+<<<<<<< HEAD
       home: NewsScreen(),
+=======
+      home: const NewsScreen(),
+>>>>>>> 90f20c79f5964588614ba20cad01b4d52c820f41
     );  }
 }
 
