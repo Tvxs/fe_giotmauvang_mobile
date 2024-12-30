@@ -1,7 +1,8 @@
+import 'package:fe_giotmauvang_mobile/screen/loginScreen/login.dart' as login_screen;
+import 'package:fe_giotmauvang_mobile/screen/newsScreen/news.dart';
 import 'package:fe_giotmauvang_mobile/screen/QandA/QA.dart';
 import 'package:fe_giotmauvang_mobile/screen/homeScreen/home.dart';
 import 'package:flutter/material.dart';
-import '../screen/newsScreen/news.dart';
 import '../screen/certificateScreen/certificate.dart';
 
 class NavBarCustom extends StatefulWidget {
@@ -108,7 +109,7 @@ class _NavBarCustomState extends State<NavBarCustom> {
         }
       },
       child: MouseRegion(
-        cursor: SystemMouseCursors.click, // Hiển thị pointer khi di chuột
+        cursor: SystemMouseCursors.click,
         child: Container(
           alignment: Alignment.centerLeft,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
@@ -204,10 +205,23 @@ class CustomAppBar extends StatelessWidget {
             'assets/logo-hutech.png',
             height: 40,
           ),
-          // Icon người dùng
-          const Icon(
-            Icons.person_outline,
-            color: Colors.black,
+          // Login Icon
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const login_screen.LoginScreen(),
+                  ),
+                );
+              },
+              child: const Icon(
+                Icons.person_outline,
+                color: Colors.black,
+              ),
+            ),
           ),
         ],
       ),
