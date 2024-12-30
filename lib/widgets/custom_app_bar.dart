@@ -1,9 +1,9 @@
-import 'package:fe_giotmauvang_mobile/screen/loginScreen/login.dart' as login_screen;
-import 'package:fe_giotmauvang_mobile/screen/newsScreen/news.dart';
-import 'package:fe_giotmauvang_mobile/screen/QandA/QA.dart';
-import 'package:fe_giotmauvang_mobile/screen/homeScreen/home.dart';
+import 'package:fe_giotmauvang_mobile/screen/User/loginScreen/login.dart' as login_screen;
+import 'package:fe_giotmauvang_mobile/screen/User/newsScreen/news.dart';
+import 'package:fe_giotmauvang_mobile/screen/User/QandA/QA.dart';
+import 'package:fe_giotmauvang_mobile/screen/User/homeScreen/home.dart';
 import 'package:flutter/material.dart';
-import '../screen/certificateScreen/certificate.dart';
+import 'package:fe_giotmauvang_mobile/screen/User/certificateScreen/certificate.dart';
 
 class NavBarCustom extends StatefulWidget {
   const NavBarCustom({Key? key}) : super(key: key);
@@ -44,7 +44,7 @@ class _NavBarCustomState extends State<NavBarCustom> {
                   children: [
                     _buildMenuItem('Trang chủ', onTap: () {
                       _hideMenu();
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const HomeScreen(),
@@ -55,7 +55,7 @@ class _NavBarCustomState extends State<NavBarCustom> {
                     _buildMenuItem('Lịch sử hiến máu'),
                     _buildMenuItem('Chứng nhận', onTap: () {
                       _hideMenu();
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const CertificateScreen(),
@@ -64,7 +64,7 @@ class _NavBarCustomState extends State<NavBarCustom> {
                     }),
                     _buildMenuItem('Hỏi đáp', onTap: () {
                       _hideMenu();
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const QAScreen(),
@@ -73,7 +73,7 @@ class _NavBarCustomState extends State<NavBarCustom> {
                     }),
                     _buildMenuItem('Tin tức', onTap: () {
                       _hideMenu();
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const NewsScreen(),
@@ -201,16 +201,29 @@ class CustomAppBar extends StatelessWidget {
             ],
           ),
           // Logo
-          Image.asset(
-            'assets/logo-hutech.png',
-            height: 40,
+          MouseRegion(
+            cursor: SystemMouseCursors.click, // Thay đổi con trỏ chuột thành pointer
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomeScreen(),
+                  ),
+                );
+              },
+              child: Image.asset(
+                'assets/logo-hutech.png',
+                height: 40,
+              ),
+            ),
           ),
           // Login Icon
           MouseRegion(
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
               onTap: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const login_screen.LoginScreen(),

@@ -1,6 +1,6 @@
 import 'package:fe_giotmauvang_mobile/widgets/footer_widget.dart';
 import 'package:flutter/material.dart';
-import '../../widgets/custom_app_bar.dart';
+import '../../../widgets/custom_app_bar.dart';
 import 'banner_widget.dart';
 import 'carousel_widget.dart';
 import 'standards_widget.dart';

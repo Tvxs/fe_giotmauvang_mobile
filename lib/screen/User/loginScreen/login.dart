@@ -1,6 +1,6 @@
 import 'package:fe_giotmauvang_mobile/widgets/footer_widget.dart';
 import 'package:flutter/material.dart';
-import '../../widgets/custom_app_bar.dart';
+import '../../../widgets/custom_app_bar.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -101,7 +101,6 @@ class LoginScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
-                        // Add login functionality
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
@@ -112,7 +111,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                       child: const Text(
                         'Đăng nhập',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
                     const SizedBox(height: 16),

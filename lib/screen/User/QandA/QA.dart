@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../widgets/custom_app_bar.dart';
-import '../../widgets/footer_widget.dart';
+import '../../../widgets/custom_app_bar.dart';
+import '../../../widgets/footer_widget.dart';
 
 class QAScreen extends StatefulWidget {
   const QAScreen({Key? key}) : super(key: key);

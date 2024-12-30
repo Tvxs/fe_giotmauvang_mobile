@@ -1,6 +1,6 @@
-import 'package:fe_giotmauvang_mobile/screen/homeScreen/home.dart';
+import 'package:fe_giotmauvang_mobile/screen/User/homeScreen/home.dart';
 import 'package:flutter/material.dart';
-import 'screen/newsScreen/news.dart';
+import 'package:fe_giotmauvang_mobile/screen/User/newsScreen/news.dart';
 void main() {
   runApp(const MyApp());
 }

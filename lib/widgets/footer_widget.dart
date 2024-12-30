@@ -8,8 +8,8 @@ class FooterWidget extends StatelessWidget {
     return Column(
       children: [
         Container(
-          color: const Color(0xFF333333), // var(--footer)
-          padding: const EdgeInsets.symmetric(vertical: 40),
+          color: Colors.blue,
+          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 16),
           child: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,12 +26,11 @@ class FooterWidget extends StatelessWidget {
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
-                    decoration: TextDecoration.underline,
                   ),
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'TT Hiến Máu Nhân Đạo',
+                  'Khu AB',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -39,20 +38,13 @@ class FooterWidget extends StatelessWidget {
                   ),
                 ),
                 const Text(
-                  '466 Nguyễn Thị Minh Khai, Phường 2, Quận 3, Thành phố Hồ Chí Minh',
+                  '475A Đ. Điện Biên Phủ, Phường 25, Bình Thạnh, Hồ Chí Minh, Việt Nam',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 12),
-                const Text(
-                  '106 Thiên Phước, Phường 9, Tân Bình, Thành phố Hồ Chí Minh',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
+
                 const SizedBox(height: 30),
                 const Text(
                   'Liên hệ giờ hành chính',
@@ -65,30 +57,19 @@ class FooterWidget extends StatelessWidget {
                 TextButton(
                   onPressed: () {},
                   child: const Text(
-                    '028 3868 5509',
+                    '0706389781',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
                       color: Colors.white,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    '028 3868 5507',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+
                 const SizedBox(height: 40),
                 const Text(
-                  'Bệnh viện BTH',
+                  'Khu E',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -96,20 +77,13 @@ class FooterWidget extends StatelessWidget {
                   ),
                 ),
                 const Text(
-                  '118 Đ. Hồng Bàng, Phường 12, Quận 5, Thành phố Hồ Chí Minh',
+                  '10/80c Song Hành Xa Lộ Hà Nội, Phường Tân Phú, Quận 9, Hồ Chí Minh, Việt Nam',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 12),
-                const Text(
-                  '24 Nguyễn Thị Diệu, Phường Võ Thị Sáu, Quận 3, Thành phố Hồ Chí Minh',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
+
                 const SizedBox(height: 30),
                 const Text(
                   'Liên hệ giờ hành chính',
@@ -122,24 +96,24 @@ class FooterWidget extends StatelessWidget {
                 TextButton(
                   onPressed: () {},
                   child: const Text(
-                    '028 39571342',
+                    '0961323076',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
                       color: Colors.white,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ),
                 TextButton(
                   onPressed: () {},
                   child: const Text(
-                    '028 39575858',
+                    '0848110357',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
                       color: Colors.white,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ),
