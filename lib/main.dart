@@ -1,8 +1,8 @@
 import 'package:fe_giotmauvang_mobile/screen/User/homeScreen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/newsScreen/news.dart';
-import 'package:fe_giotmauvang_mobile/widgets/layout_admin.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/profile/profile.dart';
+
 void main() {
   runApp(const MyApp());
 }
