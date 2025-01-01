@@ -6,14 +6,14 @@ import 'package:fe_giotmauvang_mobile/screen/User/homeScreen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/certificateScreen/certificate.dart';
 
-class NavBarCustom extends StatefulWidget {
-  const NavBarCustom({Key? key}) : super(key: key);
+class LayoutAdmin extends StatefulWidget {
+  const LayoutAdmin({Key? key}) : super(key: key);
 
   @override
   _NavBarCustomState createState() => _NavBarCustomState();
 }
 
-class _NavBarCustomState extends State<NavBarCustom> {
+class _NavBarCustomState extends State<LayoutAdmin> {
   final GlobalKey _menuKey = GlobalKey();
   OverlayEntry? _menuOverlay;
 

@@ -1,6 +1,9 @@
+import 'package:fe_giotmauvang_mobile/screen/User/loginScreen/regis.dart';
 import 'package:fe_giotmauvang_mobile/widgets/footer_widget.dart';
 import 'package:flutter/material.dart';
 import '../../../widgets/custom_app_bar.dart';
+import 'package:fe_giotmauvang_mobile/screen/User/loginScreen/regis.dart';
+import 'package:flutter/gestures.dart'; // Thêm import này
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -17,7 +20,7 @@ class LoginScreen extends StatelessWidget {
           children: [
             Center(
               child: Container(
-                padding: const EdgeInsets.all(16.0,),
+                padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
@@ -101,6 +104,7 @@ class LoginScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
+                        // Handle login functionality
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
@@ -128,6 +132,16 @@ class LoginScreen extends StatelessWidget {
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold,
                               ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  // Điều hướng sang màn hình đăng ký khi bấm vào "Đăng ký"
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => RegisterScreen(),
+                                    ),
+                                  );
+                                },
                             ),
                           ],
                         ),
