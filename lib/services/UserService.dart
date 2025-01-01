@@ -6,6 +6,7 @@ class UserService {
   static const String baseUrl = 'http://localhost:8080';
   final AuthService _authService = AuthService();
 
+  //get Profile
   Future<Map<String, dynamic>> getProfile() async {
     final token = await _authService.getToken();
     final response = await http.get(
@@ -18,6 +19,8 @@ class UserService {
     return _handleResponse(response);
   }
 
+
+  // update User
   Future<Map<String, dynamic>> updateUser(String cccd, Map<String, String> userData) async {
     final token = await _authService.getToken();
     final response = await http.put(
@@ -37,4 +40,8 @@ class UserService {
     }
     throw Exception('Request failed: ${response.statusCode}');
   }
+
+
+
+
 }

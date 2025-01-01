@@ -1,12 +1,22 @@
-import 'package:fe_giotmauvang_mobile/widgets/footer_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/AuthProvider.dart'; // Đảm bảo bạn đã tạo AuthProvider
+
 import '../../../widgets/custom_app_bar.dart';
+import '../../../widgets/footer_widget.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Khai báo controller để lấy dữ liệu từ TextFormField
+    final TextEditingController usernameController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
+    // AuthProvider để quản lý trạng thái
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(106),
@@ -17,7 +27,7 @@ class LoginScreen extends StatelessWidget {
           children: [
             Center(
               child: Container(
-                padding: const EdgeInsets.all(16.0,),
+                padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
@@ -54,6 +64,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     TextFormField(
+                      controller: usernameController,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -73,6 +84,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     TextFormField(
+                      controller: passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -100,7 +112,36 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: authProvider.isLoading
+                          ? null // Vô hiệu hóa nút khi đang tải
+                          : () async {
+                        // Gọi API login
+                        await authProvider.login(
+                          usernameController.text,
+                          passwordController.text,
+                        );
+
+                        if (authProvider.error != null) {
+                          // Hiển thị lỗi nếu có
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(authProvider.error!),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        } else {
+
+                          //Thong báo đăng nhập thành công
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Đăng nhập thành công!'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                          // Chuyển hướng sau khi login thành công
+                          Navigator.pushReplacementNamed(
+                              context, '/home');
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
@@ -109,7 +150,11 @@ class LoginScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text(
+                      child: authProvider.isLoading
+                          ? const CircularProgressIndicator(
+                        color: Colors.white,
+                      )
+                          : const Text(
                         'Đăng nhập',
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),

@@ -19,36 +19,38 @@ class HomeScreen extends StatelessWidget {
         child: NavBarCustom(), // Sử dụng widget NavBarCustom
       ),
       body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: 600, // Đặt chiều cao tối thiểu
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              SizedBox(
-                height: 530, // Đặt chiều cao cụ thể
-                child: BannerWidget(),
-              ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Banner Widget
+            SizedBox(
+              height: 530, // Đặt chiều cao cho BannerWidget
+              child: const BannerWidget(),
+            ),
+            const SizedBox(height: 16),
 
-              SizedBox(height: 16),
-              SizedBox(
-                height: 600, // Đặt chiều cao cụ thể
-                child: CarouselWidget(),
-              ),
-              SizedBox(height: 16),
-              StandardsWidget(),
-              SizedBox(height: 16),
-              NotesWidget(),
-              SizedBox(height: 16),
-              AdviceWidget(),
-              // SizedBox(height: 16),
-              // ActivitiesWidget(),
+            // Carousel Widget
+            SizedBox(
+              height: 600, // Đặt chiều cao cho CarouselWidget
+              child: const CarouselWidget(),
+            ),
+            const SizedBox(height: 16),
 
-              SizedBox(height: 16,),
-              FooterWidget()
-            ],
-          ),
+            // Standard Widget
+            const StandardsWidget(),
+            const SizedBox(height: 16),
+
+            // Notes Widget
+            const NotesWidget(),
+            const SizedBox(height: 16),
+
+            // Advice Widget
+            const AdviceWidget(),
+            const SizedBox(height: 16),
+
+            // Footer Widget
+            const FooterWidget(),
+          ],
         ),
       ),
     );

@@ -1,9 +1,12 @@
+import 'package:fe_giotmauvang_mobile/providers/AuthProvider.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/loginScreen/login.dart' as login_screen;
+import 'package:fe_giotmauvang_mobile/screen/User/homeScreen/home.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/newsScreen/news.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/QandA/QA.dart';
-import 'package:fe_giotmauvang_mobile/screen/User/homeScreen/home.dart';
-import 'package:flutter/material.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/certificateScreen/certificate.dart';
+import 'package:fe_giotmauvang_mobile/screen/User/userProfileScreen/userProfile.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class NavBarCustom extends StatefulWidget {
   const NavBarCustom({Key? key}) : super(key: key);
@@ -16,6 +19,7 @@ class _NavBarCustomState extends State<NavBarCustom> {
   final GlobalKey _menuKey = GlobalKey();
   OverlayEntry? _menuOverlay;
 
+  // Hiển thị menu khi nhấn vào nút menu
   void _showMenu(BuildContext context) {
     final RenderBox renderBox = _menuKey.currentContext!.findRenderObject() as RenderBox;
     final Offset offset = renderBox.localToGlobal(Offset.zero);
@@ -93,11 +97,13 @@ class _NavBarCustomState extends State<NavBarCustom> {
     Overlay.of(context).insert(_menuOverlay!);
   }
 
+  // Ẩn menu khi người dùng nhấn ngoài menu
   void _hideMenu() {
     _menuOverlay?.remove();
     _menuOverlay = null;
   }
 
+  // Xây dựng một mục menu
   Widget _buildMenuItem(String title, {VoidCallback? onTap}) {
     return GestureDetector(
       onTap: () {
@@ -137,9 +143,7 @@ class _NavBarCustomState extends State<NavBarCustom> {
     return Scaffold(
       body: Column(
         children: [
-          // Thanh AppBar chính
           const CustomAppBar(),
-          // Thanh màu xanh
           Container(
             key: _menuKey,
             color: Colors.blue,
@@ -202,7 +206,7 @@ class CustomAppBar extends StatelessWidget {
           ),
           // Logo
           MouseRegion(
-            cursor: SystemMouseCursors.click, // Thay đổi con trỏ chuột thành pointer
+            cursor: SystemMouseCursors.click,
             child: GestureDetector(
               onTap: () {
                 Navigator.pushReplacement(
@@ -218,19 +222,42 @@ class CustomAppBar extends StatelessWidget {
               ),
             ),
           ),
-          // Login Icon
+          // Login Icon with Authentication Check
           MouseRegion(
             cursor: SystemMouseCursors.click,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const login_screen.LoginScreen(),
-                  ),
-                );
+            child: PopupMenuButton<String>(
+              onSelected: (String value) async {
+                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                if (value == 'profile') {
+                  // Chuyển đến trang hồ sơ
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const UserProfileScreen(),
+                    ),
+                  );
+                } else if (value == 'logout') {
+                  // Đăng xuất
+                  await authProvider.logout();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const login_screen.LoginScreen(),
+                    ),
+                  );
+                }
               },
-              child: const Icon(
+              itemBuilder: (BuildContext context) => [
+                const PopupMenuItem<String>(
+                  value: 'profile',
+                  child: Text('Xem Hồ Sơ'),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'logout',
+                  child: Text('Đăng Xuất'),
+                ),
+              ],
+              icon: const Icon(
                 Icons.person_outline,
                 color: Colors.black,
               ),
