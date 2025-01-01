@@ -1,8 +1,20 @@
+import 'package:fe_giotmauvang_mobile/providers/AppointmentProvider.dart';
+import 'package:fe_giotmauvang_mobile/providers/UserProvider.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/homeScreen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/newsScreen/news.dart';
+import 'package:provider/provider.dart';
 void main() {
-  runApp(const MyApp());
+  // runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => AppointmentProvider()), // Thêm các provider khác nếu cần
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
