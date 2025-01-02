@@ -29,7 +29,7 @@ class Appointment {
           ? DateTime.parse(json['next_donation_eligible_date'])
           : null,
       status: json['status'],
-      event: json['event'] != null ? Event.fromJson(json['event']) : null,
+      event: json['eventScreen'] != null ? Event.fromJson(json['eventScreen']) : null,
       user: json['user'] != null ? User.fromJson(json['user']) : null,
     );
   }
@@ -41,7 +41,7 @@ class Appointment {
       'blood_amount': bloodAmount,
       'next_donation_eligible_date': nextDonationEligibleDate?.toIso8601String(),
       'status': status,
-      'event': event?.toJson(),
+      'eventScreen': event?.toJson(),
       'user': user?.toJson(),
     };
   }

@@ -14,9 +14,6 @@ class UserProvider extends ChangeNotifier {
   Map<String, dynamic>? _userData; // Lấy DTO USER
             ///// MỌI NGƯỜI VIẾT GÌ NHỚ COMMENT LẠI NHA _ TÍN
 
-
-
-
   Future<void> loadProfile() async {
     try {
       _isLoading = true;
