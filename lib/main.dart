@@ -1,11 +1,13 @@
 import 'package:fe_giotmauvang_mobile/providers/AppointmentProvider.dart';
 import 'package:fe_giotmauvang_mobile/providers/AuthProvider.dart';
 import 'package:fe_giotmauvang_mobile/providers/UserProvider.dart';
+import 'package:fe_giotmauvang_mobile/screen/BloodDonationSchedule/BloodDonationInfo.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/homeScreen/home.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/loginScreen/login.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/userProfileScreen/userProfile.dart';
+import 'package:fe_giotmauvang_mobile/services/ApiService.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fe_giotmauvang_mobile/screen/User/newsScreen/news.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -13,8 +15,8 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => AppointmentProvider()),
-        ChangeNotifierProvider(create: (context) => AuthProvider()), // AuthProvider để kiểm tra xác thực
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => AppointmentProvider(),),
       ],
       child: const MyApp(),
     ),
@@ -28,11 +30,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // initialRoute: "/home",
       routes: {
-        '/login': (context) => const LoginScreen(), // Trang đăng nhập nếu chưa xác thực
-        '/home': (context) => const HomeScreen(), // Trang Home nếu đã đăng nhập
+        '/login': (context) => const LoginScreen(),
+        '/home': (context) => const HomeScreen(),
         '/userProfile': (context) => const UserProfileScreen(),
+        '/bloodDonationInfo': (context) =>  BloodDonationInfo(),
       },
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -40,21 +42,17 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: FutureBuilder(
-        future: context.read<AuthProvider>().checkAuthentication(), // Kiểm tra xác thực khi mở ứng dụng
+        future: context.read<AuthProvider>().checkAuthentication(),
         builder: (context, snapshot) {
-          // Nếu đang kiểm tra xác thực, hiển thị CircularProgressIndicator
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
+            return const Scaffold(body: Center(child: CircularProgressIndicator()));
           }
 
-          // Kiểm tra trạng thái xác thực của người dùng
           final authProvider = context.watch<AuthProvider>();
           if (authProvider.isAuthenticated) {
-            return const HomeScreen(); // Nếu người dùng đã đăng nhập, chuyển đến HomeScreen
+            return const HomeScreen();
           } else {
-            return const LoginScreen(); // Nếu chưa đăng nhập, chuyển đến LoginScreen
+            return const LoginScreen();
           }
         },
       ),
