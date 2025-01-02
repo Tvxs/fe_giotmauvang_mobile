@@ -1,10 +1,12 @@
 import 'package:fe_giotmauvang_mobile/providers/AuthProvider.dart';
+import 'package:fe_giotmauvang_mobile/screen/BloodDonationSchedule/BloodDonationInfo.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/loginScreen/login.dart' as login_screen;
 import 'package:fe_giotmauvang_mobile/screen/User/homeScreen/home.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/newsScreen/news.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/QandA/QA.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/certificateScreen/certificate.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/userProfileScreen/userProfile.dart';
+import 'package:fe_giotmauvang_mobile/screen/eventScreen/Event.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -55,7 +57,22 @@ class _NavBarCustomState extends State<NavBarCustom> {
                         ),
                       );
                     }),
-                    _buildMenuItem('Đăng ký hiến máu'),
+                    _buildMenuItem('Đăng ký hiến máu', onTap: (){
+                      _hideMenu();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const EventScreen(),
+                        ),);
+                    }),
+                    _buildMenuItem('Lịch hẹn của bạn', onTap: (){
+                      _hideMenu();
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>  BloodDonationInfo(),
+                      ),);
+                    }),
                     _buildMenuItem('Lịch sử hiến máu'),
                     _buildMenuItem('Chứng nhận', onTap: () {
                       _hideMenu();

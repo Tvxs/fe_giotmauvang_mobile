@@ -52,7 +52,7 @@ class AuthService {
 
   Future<String?> getToken() async {
     final prefs = await _prefs;
-    return prefs.getString('token');
+    return prefs.getString('auth_token');
   }
 
   Map<String, dynamic> _handleResponse(http.Response response) {

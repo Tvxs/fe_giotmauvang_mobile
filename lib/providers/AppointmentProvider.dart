@@ -1,54 +1,47 @@
-import 'package:fe_giotmauvang_mobile/services/ApiService.dart';
-import 'package:flutter/foundation.dart';
-import '../models/Appointment.dart';
+import 'dart:ffi';
+
+import 'package:flutter/material.dart';
+import '../services/ApiService.dart';
 
 class AppointmentProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
-  List<Appointment> _appointments = [];
-  Appointment? _currentAppointment;
+  Map<String, dynamic>? _appointmentData;
   bool _isLoading = false;
-  String? _error;
 
-  List<Appointment> get appointments => _appointments;
-  Appointment? get currentAppointment => _currentAppointment;
+  Map<String, dynamic>? get appointmentData => _appointmentData;
   bool get isLoading => _isLoading;
-  String? get error => _error;
-  bool get hasPendingAppointment => _appointments.any((a) => a.status == 0);
 
-  Future<void> loadUserAppointments(String username) async {
+  Future<void> fetchAppointmentPendingUser(String username) async {
+    _isLoading = true;
+    notifyListeners();
+
     try {
-      _isLoading = true;
-      _error = null;
-      notifyListeners();
+         final response = await _apiService.getAppointmentPendingUser(username);
+      if (response['code'] == 200) {
+         _appointmentData = response['appointmentDTO'];
 
-      final response = await _apiService.getUserAppointments(username);
-      _appointments = (response['data'] as List)
-          .map((data) => Appointment.fromJson(data))
-          .toList();
+      }
+
     } catch (e) {
-      _error = e.toString();
+      _appointmentData = null;
+      debugPrint('Error fetching appointment: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<bool> saveAppointment(String username, int eventId, Map<String, dynamic> healthMetrics) async {
-    try {
-      _isLoading = true;
-      _error = null;
-      notifyListeners();
+  Future<void> updateAppointmentStatus(int appointmentId, String status) async {
+    _isLoading = true;
+    notifyListeners();
 
-      final response = await _apiService.saveAppointment(username, eventId, healthMetrics);
-      if (response['success']) {
-        await loadUserAppointments(username);
-        return true;
+    try {
+      final response = await _apiService.updateAppointmentStatus(appointmentId, status);
+      if (response['code'] == 200) {
+        _appointmentData = response['appointmentDTO'];  // Cập nhật dữ liệu phiếu đăng ký
       }
-      _error = response['message'];
-      return false;
     } catch (e) {
-      _error = e.toString();
-      return false;
+      debugPrint('Error updating appointment status: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
