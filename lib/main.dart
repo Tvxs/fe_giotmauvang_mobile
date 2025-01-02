@@ -1,10 +1,14 @@
+import 'package:fe_giotmauvang_mobile/models/Event.dart';
 import 'package:fe_giotmauvang_mobile/providers/AppointmentProvider.dart';
 import 'package:fe_giotmauvang_mobile/providers/AuthProvider.dart';
+import 'package:fe_giotmauvang_mobile/providers/EventProvider.dart';
+import 'package:fe_giotmauvang_mobile/providers/UnitProvider.dart';
 import 'package:fe_giotmauvang_mobile/providers/UserProvider.dart';
 import 'package:fe_giotmauvang_mobile/screen/BloodDonationSchedule/BloodDonationInfo.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/homeScreen/home.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/loginScreen/login.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/userProfileScreen/userProfile.dart';
+import 'package:fe_giotmauvang_mobile/screen/eventScreen/Event.dart';
 import 'package:fe_giotmauvang_mobile/services/ApiService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +21,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => AppointmentProvider(),),
+        ChangeNotifierProvider(create: (context) => EventProvider(),),
+        ChangeNotifierProvider(create: (context) => UnitProvider())
       ],
       child: const MyApp(),
     ),
@@ -35,6 +41,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/userProfile': (context) => const UserProfileScreen(),
         '/bloodDonationInfo': (context) =>  BloodDonationInfo(),
+        '/events': (context) => const EventScreen()
       },
       title: 'Flutter Demo',
       theme: ThemeData(

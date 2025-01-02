@@ -459,7 +459,7 @@
 //       final success = await appointmentProvider.saveAppointment(
 //         // Sử dụng await ở đây
 //         userProvider.userProfile!['cccd'],
-//         1, // Replace with actual event ID
+//         1, // Replace with actual eventScreen ID
 //         healthMetrics,
 //       );
 //
