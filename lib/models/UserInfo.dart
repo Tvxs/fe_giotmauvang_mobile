@@ -1,7 +1,7 @@
 class UserInfo {
   final int id;
   final String? address;
-  final DateTime? dob;
+  final String? dob;
   final String? fullName;
   final String? sex;
 
@@ -17,7 +17,7 @@ class UserInfo {
     return UserInfo(
       id: json['id'],
       address: json['address'],
-      dob: json['dob'] != null ? DateTime.parse(json['dob']) : null,
+      dob: json['dob'] ,
       fullName: json['full_name'],
       sex: json['sex'],
     );
@@ -27,7 +27,7 @@ class UserInfo {
     return {
       'id': id,
       'address': address,
-      'dob': dob?.toIso8601String(),
+      'dob': dob,
       'full_name': fullName,
       'sex': sex,
     };

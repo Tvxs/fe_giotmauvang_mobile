@@ -25,6 +25,17 @@ class DonationUnit {
       unitPhotoUrl: json['unit_photo_url'],
     );
   }
+  static DonationUnit defaultUnit() {
+    return DonationUnit(
+      id: 0,
+      name: 'Unknown',
+      email: '',
+      location: 'Unknown location',
+      phone: '',
+      unitPhotoUrl: '',
+    );
+  }
+
 
   Map<String, dynamic> toJson() {
     return {

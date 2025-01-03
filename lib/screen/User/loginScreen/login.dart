@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/AuthProvider.dart'; // Đảm bảo bạn đã tạo AuthProvider
@@ -173,10 +174,16 @@ class LoginScreen extends StatelessWidget {
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold,
                               ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  // Chuyển trang đến màn hình đăng ký
+                                  Navigator.pushNamed(context, '/register');  // Đổi '/register' thành route màn hình đăng ký của bạn
+                                },
                             ),
                           ],
                         ),
-                      ),
+                      )
+                      ,
                     ),
                   ],
                 ),

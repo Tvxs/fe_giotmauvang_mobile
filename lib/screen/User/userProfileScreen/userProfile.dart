@@ -1,6 +1,9 @@
+import 'package:fe_giotmauvang_mobile/screen/User/homeScreen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fe_giotmauvang_mobile/providers/AuthProvider.dart';
+
+import '../../../widgets/custom_app_bar.dart';
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({Key? key}) : super(key: key);
@@ -8,14 +11,10 @@ class UserProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Thông tin người dùng'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);  // Quay lại trang trước đó
-          },
-        ),
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(106),
+        child: NavBarCustom(),
+
       ),
       body: FutureBuilder(
         future: context.read<AuthProvider>().getUserData(),  // Lấy dữ liệu người dùng từ AuthProvider

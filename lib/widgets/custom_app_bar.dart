@@ -1,4 +1,5 @@
 import 'package:fe_giotmauvang_mobile/providers/AuthProvider.dart';
+import 'package:fe_giotmauvang_mobile/screen/AppointmentHistoryScreen/AppointmentHistory.dart';
 import 'package:fe_giotmauvang_mobile/screen/BloodDonationSchedule/BloodDonationInfo.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/loginScreen/login.dart' as login_screen;
 import 'package:fe_giotmauvang_mobile/screen/User/homeScreen/home.dart';
@@ -73,7 +74,15 @@ class _NavBarCustomState extends State<NavBarCustom> {
                             builder: (context) =>  BloodDonationInfo(),
                       ),);
                     }),
-                    _buildMenuItem('Lịch sử hiến máu'),
+                    _buildMenuItem('Lịch sử đặt lịch', onTap: () {
+                      _hideMenu();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AppointmentHistoryScreen(),
+                        ),
+                      );
+                    }),
                     _buildMenuItem('Chứng nhận', onTap: () {
                       _hideMenu();
                       Navigator.pushReplacement(

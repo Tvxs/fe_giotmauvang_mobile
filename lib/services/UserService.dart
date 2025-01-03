@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:fe_giotmauvang_mobile/services/AuthService.dart';
 
+import '../models/DTO/ApiResponse.dart';
+import '../models/User.dart';
+
 class UserService {
   static const String baseUrl = 'http://192.168.72.1:8080';
   final AuthService _authService = AuthService();
@@ -42,6 +45,23 @@ class UserService {
   }
 
 
+  Future<ApiResponse> register(User user) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/register'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'cccd': user.cccd,
+        'password': user.password,
+        'phone': user.phone,
+        'email': user.email,
+        'fullName': user.userInfo?.fullName,
+        'dob': user.userInfo?.dob?.toString(),
+        'sex': user.userInfo?.sex,
+        'address': user.userInfo?.address,
+      }),
+    );
 
-
+    final data = jsonDecode(response.body);
+    return ApiResponse.fromJson(data);
+  }
 }
