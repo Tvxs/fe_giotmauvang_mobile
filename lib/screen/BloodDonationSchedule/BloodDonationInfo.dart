@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../providers/AppointmentProvider.dart';
+import '../../widgets/custom_app_bar.dart';
 
 class BloodDonationInfo extends StatelessWidget {
   Future<Map<String, dynamic>> _loadUserDataFromSharedPreferences() async {
@@ -56,8 +57,9 @@ class BloodDonationInfo extends StatelessWidget {
     final userInfo = userData['userInfoDTO'] as Map<String, dynamic>?;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Thông tin đăng ký hiến máu'),
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(106),
+        child: NavBarCustom(),
       ),
       body: Consumer<AppointmentProvider>(
         builder: (context, appointmentProvider, child) {
@@ -78,64 +80,70 @@ class BloodDonationInfo extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           _buildSectionTitle('Thông tin cá nhân'),
-                          _buildInfoText('Họ và tên', userInfo?['fullName']),
-                          _buildInfoText('Số CMND', userData['username']),
-                          _buildInfoText('Ngày sinh', userInfo?['dob']),
-                          _buildInfoText('Giới tính', userInfo?['sex']),
-                          _buildInfoText('Nghề nghiệp', userData['job']),
-                          _buildInfoText('Đơn vị', userData['organization']),
-                          _buildInfoText('Nhóm máu', userData['bloodType']),
-                          const SizedBox(height: 20),
-                          _buildSectionTitle('Thông tin liên hệ'),
-                          _buildInfoText('Địa chỉ liên lạc', userData['address']),
-                          _buildInfoText('Điện thoại di động', userData['phone']),
-                          _buildInfoText('Email', userData['email']),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildSectionTitle('Phiếu đăng ký hiến máu'),
-                          if (appointmentData == null) ...[
-                            const Center(
-                              child: Text(
-                                'Chưa đăng ký hiến máu',
-                                style: TextStyle(fontSize: 16, color: Colors.grey),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ] else if (appointmentData['status'] == 'PENDING') ...[
-                            Column(
+                          _buildCard(
+                            child: Column(
                               children: [
-                                const Icon(
-                                  Icons.description,
-                                  size: 100,
-                                  color: Colors.grey,
-                                ),
-                                Text(
-                                  'Bạn đã đăng ký hiến máu',
-                                  style: const TextStyle(fontSize: 16, color: Colors.grey),
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  'Ngày hẹn: ${appointmentData['appointmentDateTime']}',
-                                  style: const TextStyle(fontSize: 16, color: Colors.grey),
-                                ),
+                                _buildInfoText('Họ và tên', userInfo?['fullName']),
+                                _buildInfoText('Số CMND', userData['username']),
+                                _buildInfoText('Ngày sinh', userInfo?['dob']),
+                                _buildInfoText('Giới tính', userInfo?['sex']),
+                                _buildInfoText('Nghề nghiệp', userData['job']),
+                                _buildInfoText('Đơn vị', userData['organization']),
+                                _buildInfoText('Nhóm máu', userData['bloodType']),
                               ],
                             ),
-                          ],
+                          ),
+                          const SizedBox(height: 20),
+                          _buildSectionTitle('Thông tin liên hệ'),
+                          _buildCard(
+                            child: Column(
+                              children: [
+                                _buildInfoText('Địa chỉ liên lạc', userData['address']),
+                                _buildInfoText('Điện thoại di động', userData['phone']),
+                                _buildInfoText('Email', userData['email']),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
+                // Phần "Phiếu đăng ký hiến máu" được hiển thị phía dưới "Thông tin cá nhân"
+                _buildSectionTitle('Phiếu đăng ký hiến máu'),
+                if (appointmentData == null) ...[
+                  const Center(
+                    child: Text(
+                      'Chưa đăng ký hiến máu',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ] else if (appointmentData['status'] == 'PENDING') ...[
+                  Column(
+                    children: [
+                      const Icon(
+                        Icons.description,
+                        size: 100,
+                        color: Colors.grey,
+                      ),
+                      Text(
+                        'Bạn đã đăng ký hiến máu',
+                        style: const TextStyle(fontSize: 16, color: Colors.grey),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Ngày hẹn: ${appointmentData['appointmentDateTime']}',
+                        style: const TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 40),
                 ElevatedButton(
                   onPressed: () async {
@@ -182,8 +190,6 @@ class BloodDonationInfo extends StatelessWidget {
                     },
                   ),
                 ),
-
-
               ],
             ),
           );
@@ -203,6 +209,19 @@ class BloodDonationInfo extends StatelessWidget {
           fontWeight: FontWeight.bold,
           color: Color.fromRGBO(28, 82, 145, 1),
         ),
+      ),
+    );
+  }
+
+  // Card chứa thông tin
+  Widget _buildCard({required Widget child}) {
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: child,
       ),
     );
   }

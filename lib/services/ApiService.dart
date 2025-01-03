@@ -8,6 +8,41 @@ class ApiService {
 
   ApiService();
   //Lấy phiếu đăng ký có trạng thái là pending từ phía server nhé
+
+  Future<Map<String, dynamic>> saveAppointment({
+
+    required String username,
+    required String eventId,
+    required Map<String, dynamic> healthMetrics,
+  }) async {
+    final url = Uri.parse('$baseUrl/appointments/save');
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final token = sharedPreferences.getString('auth_token');
+    final body = jsonEncode({
+      'healthMetrics': healthMetrics,
+    });
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/appointments/save?username=$username&eventId=$eventId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json'},
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+
+      } else {
+        return {
+          'success': false,
+          'message': 'Error: ${response.statusCode}. ${response.reasonPhrase}',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Error: $e'};
+    }
+  }
   Future<Map<String, dynamic>> getAppointmentPendingUser(String username) async {
  // Lấy Bearer token từ SharedPreferences
     final sharedPreferences = await SharedPreferences.getInstance();
@@ -31,6 +66,51 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> getUserAppointment(String username) async {
+    // Lấy Bearer token từ SharedPreferences
+    final sharedPreferences = await SharedPreferences.getInstance();
+    final token = sharedPreferences.getString('auth_token');
+    if (token == null) {
+      throw Exception('Token không tồn tại');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/appointments/by-user?username=$username'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    // Kiểm tra mã trạng thái HTTP
+    if (response.statusCode != 200) {
+      throw Exception('Lỗi khi gọi API: ${response.statusCode} ${response.reasonPhrase}');
+    }
+
+    // Gỡ lỗi và kiểm tra phản hồi
+    print('Response body: ${response.body}');
+
+    var decodedResponse;
+    try {
+      decodedResponse = jsonDecode(response.body);
+    } catch (e) {
+      throw Exception('Lỗi phân tích JSON: $e');
+    }
+
+    // Kiểm tra kiểu dữ liệu trả về
+    if (decodedResponse is Map<String, dynamic>) {
+      // Xử lý trường hợp null an toàn
+      decodedResponse['appointmentDTOList'] = (decodedResponse['appointmentDTOList'] ?? [])
+          .map((item) => item ?? {})
+          .toList(); // Nếu 'appointmentDTOList' là null, gán nó là danh sách rỗng
+
+      return decodedResponse;
+    } else {
+      throw Exception('Dữ liệu trả về không hợp lệ: ${response.body}');
+    }
+  }
+
+
 
   // Update lại trạng thái lịch hẹn thành CANCLE đối với người dùng ( Không có xóa nhé)
   Future<Map<String, dynamic>> updateAppointmentStatus(int appointmentId, String status) async {
@@ -53,12 +133,41 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        return jsonDecode(response.body)  as Map<String, dynamic>;
       } else {
         throw Exception('Lỗi khi cập nhật trạng thái: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Có lỗi khi gửi yêu cầu: $e');
+    }
+  }
+
+  // Lấy Event dựa trên id
+  Future<Map<String, dynamic>> getEventById(String eventId) async {
+    try {
+      // Lấy SharedPreferences và token
+      final sharedPreferences = await SharedPreferences.getInstance();
+      final token = sharedPreferences.getString('auth_token');
+
+      // Gửi request tới API với token trong header
+      final response = await http.get(
+        Uri.parse('$baseUrl/events/get/$eventId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      // Kiểm tra mã trạng thái của response
+      if (response.statusCode == 200) {
+        // Giả sử response.body chứa dữ liệu sự kiện
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to load event. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Xử lý lỗi nếu có
+      throw Exception('Failed to load event data: $e');
     }
   }
 
@@ -136,6 +245,7 @@ class ApiService {
       throw Exception('Lỗi khi gọi API: ${response.statusCode} ${response.reasonPhrase}');
     }
   }
+
 
 
 }

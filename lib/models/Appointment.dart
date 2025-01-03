@@ -3,46 +3,66 @@ import 'package:fe_giotmauvang_mobile/models/User.dart';
 
 class Appointment {
   final int id;
-  final DateTime appointmentDateTime;
+  final String appointmentDateTime;
   final int? bloodAmount;
-  final DateTime? nextDonationEligibleDate;
-  final int status;
-  final Event? event;  // Changed from eventId
-  final User? user;    // Changed from userCccd to User object
+  final String status;
+  final String? nextDonationEligibleDate;
+  final int eventId;  // Changed from eventId
+  final String userId;    // Changed from userCccd to User object
+  final int? bloodDonationHistoryId;
+  final int? healthCheckId;
+  final int? bloodInventoryId;
+  Event? event;
+
 
   Appointment({
     required this.id,
     required this.appointmentDateTime,
-    this.bloodAmount,
-    this.nextDonationEligibleDate,
+    required this.bloodAmount,
     required this.status,
+    this.bloodDonationHistoryId,
+    required this.healthCheckId,
+    required this.userId,
+    required this.eventId,
+    this.nextDonationEligibleDate,
+    this.bloodInventoryId,
     this.event,
-    this.user,
-  });
 
-  factory Appointment.fromJson(Map<String, dynamic> json) {
-    return Appointment(
-      id: json['id'],
-      appointmentDateTime: DateTime.parse(json['appointment_date_time']),
-      bloodAmount: json['blood_amount'],
-      nextDonationEligibleDate: json['next_donation_eligible_date'] != null
-          ? DateTime.parse(json['next_donation_eligible_date'])
-          : null,
-      status: json['status'],
-      event: json['eventScreen'] != null ? Event.fromJson(json['eventScreen']) : null,
-      user: json['user'] != null ? User.fromJson(json['user']) : null,
-    );
-  }
+  });
+  // factory Appointment.fromJson(Map<String, dynamic> json) {
+  //   return Appointment(
+  //     id: json['id'] as int,
+  //     appointmentDateTime: json['appointmentDateTime']! as String,
+  //     bloodAmount: json['bloodAmount'] as int,
+  //     status: json['status'] as String,
+  //     bloodDonationHistoryId: json['bloodDonationHistoryId'] as int?,
+  //     healthCheckId: json['healthCheckId'] as int,
+  //     userId: json['userId'] as String,
+  //     eventId: json['eventId'] as int,
+  //     nextDonationEligibleDate: json['nextDonationEligibleDate'] as String?,
+  //     bloodInventoryId: json['bloodInventoryId'] as int?,
+  //   );
+  // }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'appointment_date_time': appointmentDateTime.toIso8601String(),
-      'blood_amount': bloodAmount,
-      'next_donation_eligible_date': nextDonationEligibleDate?.toIso8601String(),
+      'appointment_date_time': appointmentDateTime,
+      'bloodAmount': bloodAmount,
+      'next_donation_eligible_date': nextDonationEligibleDate,
       'status': status,
-      'eventScreen': event?.toJson(),
-      'user': user?.toJson(),
+      'eventScreen': eventId,
+      'user': userId,
     };
+  }
+  factory Appointment.fromJson(Map<String,dynamic> json){
+    return Appointment(
+        id: json['id'],
+        appointmentDateTime: json['appointmentDateTime'],
+        bloodAmount: json['BloodAmount'],
+        status: json['status'],
+        healthCheckId: json['healthCheckId'],
+        userId: json['userId'],
+        eventId: json['eventId']);
   }
 }

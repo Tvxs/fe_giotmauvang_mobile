@@ -9,8 +9,8 @@ class Event {
   final TimeOfDay eventStartTime;
   final int? maxRegistrations;
   final String? name;
-  final int status;
-  final DonationUnit donationUnit;  // Changed from donationUnitId
+  final String? status;
+  final DonationUnit donationUnitDTO;  // Changed from donationUnitId
 
   Event({
     required this.id,
@@ -21,20 +21,32 @@ class Event {
     this.maxRegistrations,
     this.name,
     required this.status,
-    required this.donationUnit,
+    required this.donationUnitDTO,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
+
+    var donationUnitDTOJson = json['donationUnitDTO'];
+    DonationUnit donationUnitDTO;
+
+    // Nếu donationUnitDTO là Map, ta tiếp tục xử lý
+    if (donationUnitDTOJson != null && donationUnitDTOJson is Map<String, dynamic>) {
+      donationUnitDTO = DonationUnit.fromJson(donationUnitDTOJson);
+    } else {
+      // Nếu không có giá trị hợp lệ, trả về một đối tượng mặc định hoặc null
+      donationUnitDTO = DonationUnit.defaultUnit();
+    }
+
     return Event(
       id: json['id'],
-      currentRegistrations: json['current_registrations'],
-      eventDate: DateTime.parse(json['event_date']),
-      eventEndTime: TimeOfDay.fromDateTime(DateTime.parse("2000-01-01 ${json['event_end_time']}")),
-      eventStartTime: TimeOfDay.fromDateTime(DateTime.parse("2000-01-01 ${json['event_start_time']}")),
-      maxRegistrations: json['max_registrations'],
+      currentRegistrations: json['currentRegistrations'],
+      eventDate: DateTime.parse(json['eventDate']),
+      eventEndTime: TimeOfDay.fromDateTime(DateTime.parse("2000-01-01 ${json['eventEndTime']}")),
+      eventStartTime: TimeOfDay.fromDateTime(DateTime.parse("2000-01-01 ${json['eventStartTime']}")),
+      maxRegistrations: json['maxRegistrations'],
       name: json['name'],
-      status: json['status'],
-      donationUnit: DonationUnit.fromJson(json['donation_unit']),
+      status: json['status'] ?? 'unknown',
+      donationUnitDTO: donationUnitDTO
     );
   }
 
@@ -48,7 +60,7 @@ class Event {
       'max_registrations': maxRegistrations,
       'name': name,
       'status': status,
-      'donation_unit': donationUnit.toJson(),
+      'donation_unit': donationUnitDTO.toJson(),
     };
   }
 }
