@@ -151,7 +151,7 @@ class BloodDonationInfo extends StatelessWidget {
 
                     if (appointmentProvider.appointmentData == null) {
                       // Nếu không có phiếu đăng ký hiến máu, chuyển hướng đến trang tìm kiếm sự kiện
-                      Navigator.pushNamed(context, '/searchBloodDonationEvent');
+                      Navigator.pushNamed(context, '/events');
                     } else {
                       // Kiểm tra nếu có phiếu đăng ký và có id
                       final appointmentData = appointmentProvider.appointmentData;
@@ -205,7 +205,7 @@ class BloodDonationInfo extends StatelessWidget {
       child: Text(
         title,
         style: const TextStyle(
-          fontSize: 18,
+          fontSize: 20,
           fontWeight: FontWeight.bold,
           color: Color.fromRGBO(28, 82, 145, 1),
         ),

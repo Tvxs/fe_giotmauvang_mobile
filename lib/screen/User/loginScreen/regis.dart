@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import '../../../models/User.dart';
 import '../../../models/UserInfo.dart';
 import '../../../providers/RegisterProvider.dart';
+import '../../../widgets/custom_app_bar.dart';
+import '../../../widgets/footer_widget.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -29,7 +31,10 @@ class _UserFormState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Đăng ký tài khoản')),
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(106),
+        child: NavBarCustom(),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16),
@@ -46,16 +51,25 @@ class _UserFormState extends State<Register> {
         children: [
           TextFormField(
             controller: _cccdController,
-            decoration: InputDecoration(labelText: 'CCCD'),
+            decoration: InputDecoration(
+              labelText: 'CCCD',
+              prefixIcon: Icon(Icons.credit_card),
+              border: OutlineInputBorder(),
+            ),
             validator: (value) {
               if (value?.isEmpty ?? true) return 'Vui lòng nhập CCCD';
               if (value!.length != 12) return 'CCCD phải có 12 số';
               return null;
             },
           ),
+          SizedBox(height: 16),
           TextFormField(
             controller: _passwordController,
-            decoration: InputDecoration(labelText: 'Mật khẩu'),
+            decoration: InputDecoration(
+              labelText: 'Mật khẩu',
+              prefixIcon: Icon(Icons.lock),
+              border: OutlineInputBorder(),
+            ),
             obscureText: true,
             validator: (value) {
               if (value?.isEmpty ?? true) return 'Vui lòng nhập mật khẩu';
@@ -63,9 +77,14 @@ class _UserFormState extends State<Register> {
               return null;
             },
           ),
+          SizedBox(height: 16),
           TextFormField(
             controller: _phoneController,
-            decoration: InputDecoration(labelText: 'Số điện thoại'),
+            decoration: InputDecoration(
+              labelText: 'Số điện thoại',
+              prefixIcon: Icon(Icons.phone),
+              border: OutlineInputBorder(),
+            ),
             keyboardType: TextInputType.phone,
             validator: (value) {
               if (value?.isEmpty ?? true) return 'Vui lòng nhập số điện thoại';
@@ -74,9 +93,14 @@ class _UserFormState extends State<Register> {
               return null;
             },
           ),
+          SizedBox(height: 16),
           TextFormField(
             controller: _emailController,
-            decoration: InputDecoration(labelText: 'Email'),
+            decoration: InputDecoration(
+              labelText: 'Email',
+              prefixIcon: Icon(Icons.email),
+              border: OutlineInputBorder(),
+            ),
             keyboardType: TextInputType.emailAddress,
             validator: (value) {
               if (value?.isEmpty ?? true) return 'Vui lòng nhập email';
@@ -87,7 +111,7 @@ class _UserFormState extends State<Register> {
           ),
           SizedBox(height: 20),
           ElevatedButton(
-            onPressed: ()async  {
+            onPressed: () async {
               if (_formKey1.currentState!.validate()) {
                 final user = User(
                   cccd: _cccdController.text,
@@ -97,7 +121,9 @@ class _UserFormState extends State<Register> {
                   roleId: 2,
                 );
 
-                final success = await context.read<RegisterProvider>().submitUserData(user);
+                final success = await context
+                    .read<RegisterProvider>()
+                    .submitUserData(user);
 
                 if (success) {
                   setState(() {
@@ -107,6 +133,12 @@ class _UserFormState extends State<Register> {
               }
             },
             child: Text('Tiếp tục'),
+            style: ElevatedButton.styleFrom(
+              minimumSize: Size(double.infinity, 50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
           ),
         ],
       ),
@@ -120,13 +152,19 @@ class _UserFormState extends State<Register> {
         children: [
           TextFormField(
             controller: _fullNameController,
-            decoration: InputDecoration(labelText: 'Họ và tên'),
+            decoration: InputDecoration(
+              labelText: 'Họ và tên',
+              prefixIcon: Icon(Icons.person),
+              border: OutlineInputBorder(),
+            ),
             validator: (value) =>
             value?.isEmpty ?? true ? 'Vui lòng nhập họ tên' : null,
           ),
+          SizedBox(height: 16),
           ListTile(
             title: Text('Ngày sinh'),
             subtitle: Text(_selectedDate?.toString().split(' ')[0] ?? 'Chọn ngày sinh'),
+            trailing: Icon(Icons.calendar_today),
             onTap: () async {
               final date = await showDatePicker(
                 context: context,
@@ -139,58 +177,78 @@ class _UserFormState extends State<Register> {
               }
             },
           ),
+          SizedBox(height: 16),
           DropdownButtonFormField<String>(
             value: _selectedSex,
-            items: ['Nam', 'Nữ'].map((sex) => DropdownMenuItem(
-              value: sex,
-              child: Text(sex),
-            )).toList(),
+            items: ['Nam', 'Nữ'].map((sex) {
+              return DropdownMenuItem(
+                value: sex,
+                child: Text(sex),
+              );
+            }).toList(),
             onChanged: (value) => setState(() => _selectedSex = value!),
-            decoration: InputDecoration(labelText: 'Giới tính'),
+            decoration: InputDecoration(
+              labelText: 'Giới tính',
+              prefixIcon: Icon(Icons.person_pin),
+              border: OutlineInputBorder(),
+            ),
           ),
+          SizedBox(height: 16),
           TextFormField(
             controller: _addressController,
-            decoration: InputDecoration(labelText: 'Địa chỉ'),
+            decoration: InputDecoration(
+              labelText: 'Địa chỉ',
+              prefixIcon: Icon(Icons.home),
+              border: OutlineInputBorder(),
+            ),
             validator: (value) =>
             value?.isEmpty ?? true ? 'Vui lòng nhập địa chỉ' : null,
           ),
           SizedBox(height: 20),
-          Consumer<RegisterProvider>(
-            builder: (context, provider, child) {
-              if (provider.isLoading) {
-                return Center(child: CircularProgressIndicator());
-              }
-              return ElevatedButton(
-                onPressed: () async {
-                  String formatDate = DateFormat('yyyy-MM-dd').format(_selectedDate!);
-                  if (_formKey2.currentState!.validate() && _selectedDate != null) {
-                    final userInfo = UserInfo(
-                      fullName: _fullNameController.text,
-                      dob:  formatDate,
-                      sex: _selectedSex,
-                      address: _addressController.text,
-                      id: -1,
-                    );
+          Consumer<RegisterProvider>(builder: (context, provider, child) {
+            if (provider.isLoading) {
+              return Center(child: CircularProgressIndicator());
+            }
+            return ElevatedButton(
+              onPressed: () async {
+                String formatDate =
+                DateFormat('yyyy-MM-dd').format(_selectedDate!);
+                if (_formKey2.currentState!.validate() &&
+                    _selectedDate != null) {
+                  final userInfo = UserInfo(
+                    fullName: _fullNameController.text,
+                    dob: formatDate,
+                    sex: _selectedSex,
+                    address: _addressController.text,
+                    id: -1,
+                  );
 
-                    final success = await provider.submitUserInfo(userInfo);
-                    if (success) {
-                      // Hiển thị thông báo thành công
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Đăng ký thành công!'),
-                        ),
-                      );
-                      // Chuyển hướng đến trang login
-                      Navigator.pushReplacementNamed(context, '/login');
-                    }
+                  final success =
+                  await provider.submitUserInfo(userInfo);
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Đăng ký thành công!'),
+                      ),
+                    );
+                    Navigator.pushReplacementNamed(context, '/login');
                   }
-                },
-                child: Text('Hoàn tất đăng ký'),
-              );
-            },
-          ),
+                }
+              },
+              child: Text('Hoàn tất đăng ký'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+            );
+          }),
+          const FooterWidget(),
         ],
       ),
+
     );
+
   }
 }

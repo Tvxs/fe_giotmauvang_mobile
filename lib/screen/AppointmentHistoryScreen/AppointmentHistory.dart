@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/Appointment.dart';
 import '../../providers/AppointmentProvider.dart';
+import '../../widgets/custom_app_bar.dart';
 
 class AppointmentHistoryScreen extends StatefulWidget {
   @override
@@ -29,30 +30,27 @@ class _HistoryAppointState extends State<AppointmentHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title:const Text('Lịch sử đặt hẹn'),
-        backgroundColor: Colors.blue[800],
-        foregroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (Navigator.canPop(context)) {
-              Navigator.of(context).pop(); // Quay lại màn hình trước
-            } else {
-              // Nếu không thể quay lại, điều hướng đến một màn hình khác nếu cần
-              Navigator.of(context).pushReplacementNamed('/home');
-            }
-          },
-        ),
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(106),
+        child: NavBarCustom(),
+
       ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(
+
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 16),
+            Text(
+            'Lịch sử đặt hẹn',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue[800],
+              ),
+            ),
+            const  SizedBox(height: 16),
               Expanded(
                 child: Consumer<AppointmentProvider>(
                   builder: (context, provider, child) {
