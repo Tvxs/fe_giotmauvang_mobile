@@ -11,6 +11,9 @@ class UserProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
+  Map<String, dynamic>? _userData; // Lấy DTO USER
+            ///// MỌI NGƯỜI VIẾT GÌ NHỚ COMMENT LẠI NHA _ TÍN
+
   Future<void> loadProfile() async {
     try {
       _isLoading = true;
@@ -48,4 +51,6 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+
 }

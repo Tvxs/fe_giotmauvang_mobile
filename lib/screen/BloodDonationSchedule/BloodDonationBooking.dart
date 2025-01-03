@@ -1,11 +1,18 @@
-import 'package:fe_giotmauvang_mobile/providers/AppointmentProvider.dart';
-import 'package:fe_giotmauvang_mobile/providers/UserProvider.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../providers/EventProvider.dart';
+import '../../providers/AppointmentProvider.dart';
+import '../../providers/UserProvider.dart';
+import '../../widgets/custom_app_bar.dart';
 
 class BloodDonationBooking extends StatefulWidget {
-  const BloodDonationBooking({Key? key}) : super(key: key);
+  final String eventId;
+  const BloodDonationBooking({Key? key, required this.eventId}) : super(key: key);
 
   @override
   State<BloodDonationBooking> createState() => _BloodDonationBookingState();
@@ -13,75 +20,47 @@ class BloodDonationBooking extends StatefulWidget {
 
 class _BloodDonationBookingState extends State<BloodDonationBooking> {
   int _currentStep = 0;
-  DateTime selectedDate = DateTime.now();
-  final timeSlot = "07:00 - 11:00";
-  Map<String, bool> answers = {};
-  Map<String, dynamic> healthMetrics = {};
+  late  Future<Map<String, dynamic>> _eventDataFuture;
+  final BookingFormData _formData = BookingFormData();
 
-  final Map<String, TextEditingController> otherControllers = {
-    '2.3': TextEditingController(),
-    '3.5': TextEditingController(),
-    '4.9': TextEditingController(),
-    '5.5': TextEditingController(),
-    '6.5': TextEditingController(),
-  };
-
-  void _updateHealthMetrics() {
-    healthMetrics = {
-      'hasDonatedBlood': answers['1.1'] ?? false,
-      'hasChronicDiseases': answers['2.1'] ?? false,
-      'chronicDiseaseDetails': otherControllers['2.3']?.text,
-      'hasRecentDiseases':
-          ['3.1', '3.2', '3.3'].any((key) => answers[key] ?? false),
-      'recentDiseaseDetails': otherControllers['3.5']?.text,
-      'hasSymptoms': ['4.1', '4.2', '4.3', '4.4', '4.5', '4.6', '4.7']
-          .any((key) => answers[key] ?? false),
-      'symptomDetails': otherControllers['4.9']?.text,
-      'hasRecentConditions':
-          ['5.1', '5.2', '5.3'].any((key) => answers[key] ?? false),
-      'recentConditionDetails': otherControllers['5.5']?.text,
-      'hasRecentMedicationsOrVaccines':
-          ['6.1', '6.2', '6.3'].any((key) => answers[key] ?? false),
-      'recentMedicationDetails': otherControllers['6.5']?.text,
-      'isPregnantOrNursing': answers['7.1'] ?? false,
-      'hasMenstrualCycle': answers['7.2'] ?? false,
-      'HIVTestAgreement': answers['8.1'] ?? true,
-      'additionalNotes': {
-        'chronicDetails': otherControllers['2.3']?.text,
-        'recentDiseases': otherControllers['3.5']?.text,
-        'symptoms': otherControllers['4.9']?.text,
-        'otherConditions': otherControllers['5.5']?.text,
-        'recentMedications': otherControllers['6.5']?.text,
-      },
-    };
+  @override
+  void initState() {
+    super.initState();
+    _eventDataFuture = _getEventData();
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 30)),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
+  Future<Map<String, dynamic>> _getEventData() async {
+    // Simulate API call
+    return await   context.read<EventProvider>().getEventById(widget.eventId);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(106),
+
+        child: NavBarCustom(),
+
+      ),
       body: Column(
         children: [
-          _buildHeader(),
           _buildStepper(),
           Expanded(
-            child: SingleChildScrollView(
-              child: _currentStep == 0
-                  ? _buildTimeLocationStep()
-                  : _buildRegistrationStep(),
+            child: FutureBuilder<Map<String, dynamic>>(
+              future: _eventDataFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                if (!snapshot.hasData) {
+                  return const Center(child: Text('No data available'));
+                }
+                return _buildMainContent(snapshot.data!);
+              },
             ),
           ),
         ],
@@ -89,64 +68,60 @@ class _BloodDonationBookingState extends State<BloodDonationBooking> {
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: const Text(
-        'Đặt lịch hiến máu',
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-        ),
+  Widget _buildStepper() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: [
+          _buildStepItem(isActive: _currentStep >= 0, icon: Icons.calendar_today, label: 'Thời gian & địa điểm'),
+          Expanded(
+            child: Container(
+              height: 2,
+              color: _currentStep > 0 ? Colors.blue : Colors.grey[300],
+            ),
+          ),
+          _buildStepItem(isActive: _currentStep >= 1, icon: Icons.description, label: 'Phiếu đăng ký'),
+        ],
       ),
     );
   }
 
-  Widget _buildStepper() {
-    return Row(
-      children: [
-        _buildStepItem(
-            isActive: _currentStep >= 0,
-            icon: Icons.calendar_today,
-            label: 'Thời gian & địa điểm'),
-        Expanded(
-          child: Container(
-              height: 2,
-              color: _currentStep > 0 ? Colors.blue : Colors.grey[300]),
-        ),
-        _buildStepItem(
-            isActive: _currentStep >= 1,
-            icon: Icons.description,
-            label: 'Phiếu đăng ký'),
-      ],
-    );
-  }
-
-  Widget _buildStepItem(
-      {required bool isActive, required IconData icon, required String label}) {
+  Widget _buildStepItem({required bool isActive, required IconData icon, required String label}) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, color: isActive ? Colors.blue : Colors.grey),
         const SizedBox(height: 4),
-        Text(label,
-            style: TextStyle(color: isActive ? Colors.blue : Colors.grey)),
+        Text(
+          label,
+          style: TextStyle(
+            color: isActive ? Colors.blue : Colors.grey,
+            fontSize: 12,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildTimeLocationStep() {
-    return Padding(
+  Widget _buildMainContent(Map<String, dynamic> eventData) {
+    return _currentStep == 0
+        ? _buildTimeLocationStep(eventData)
+        : _buildHealthQuestionnaire();
+  }
+
+  Widget _buildTimeLocationStep(Map<String, dynamic> eventData) {
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDateSelection(),
+          _buildDateSection(),
           const SizedBox(height: 24),
-          _buildLocationSelection(),
+          _buildLocationSection(eventData),
           const SizedBox(height: 24),
-          _buildBloodTypeNeeded(),
+          _buildBloodTypeSection(),
           const SizedBox(height: 24),
-          _buildTimeSlots(),
+          _buildTimeSection(eventData),
           const SizedBox(height: 32),
           _buildContinueButton(),
         ],
@@ -154,7 +129,7 @@ class _BloodDonationBookingState extends State<BloodDonationBooking> {
     );
   }
 
-  Widget _buildDateSelection() {
+  Widget _buildDateSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -168,14 +143,14 @@ class _BloodDonationBookingState extends State<BloodDonationBooking> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
+              border: Border.all(color: Colors.grey.shade300),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  DateFormat('dd/MM/yyyy').format(selectedDate),
+                  DateFormat('dd/MM/yyyy').format(_formData.selectedDate),
                   style: const TextStyle(fontSize: 16),
                 ),
                 const Icon(Icons.calendar_today),
@@ -187,12 +162,12 @@ class _BloodDonationBookingState extends State<BloodDonationBooking> {
     );
   }
 
-  Widget _buildLocationSelection() {
+  Widget _buildLocationSection(Map<String, dynamic> eventData) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: const [
+        const Row(
+          children: [
             Icon(Icons.location_on, color: Colors.blue),
             SizedBox(width: 8),
             Text(
@@ -202,32 +177,27 @@ class _BloodDonationBookingState extends State<BloodDonationBooking> {
           ],
         ),
         const SizedBox(height: 16),
-        _buildLocationDropdown('Tỉnh/Thành phố', 'Hồ Chí Minh'),
+        _buildLocationDropdown('Tỉnh/Thành phố', 'Thành phố Hồ Chí Minh'),
         const SizedBox(height: 12),
         _buildLocationDropdown(
           'Địa điểm',
-          'Hiến máu - 466 Nguyễn Thị minh Khai',
-          subtitle:
-              '466 Nguyễn Thị Minh Khai Phường 02, Quận 3, Tp Hồ Chí Minh',
+          eventData['donationUnitDTO']['location'],
+          subtitle: eventData['address'],
         ),
       ],
     );
   }
 
-  Widget _buildLocationDropdown(String label, String value,
-      {String? subtitle}) {
+  Widget _buildLocationDropdown(String label, String value, {String? subtitle}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(color: Colors.grey[600]),
-        ),
+        Text(label, style: TextStyle(color: Colors.grey[600])),
         const SizedBox(height: 4),
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[300]!),
+            border: Border.all(color: Colors.grey.shade300),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
@@ -236,8 +206,7 @@ class _BloodDonationBookingState extends State<BloodDonationBooking> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(value,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
                     if (subtitle != null)
                       Text(
                         subtitle,
@@ -254,17 +223,15 @@ class _BloodDonationBookingState extends State<BloodDonationBooking> {
     );
   }
 
-  Widget _buildBloodTypeNeeded() {
+  Widget _buildBloodTypeSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Nhóm máu cần hiến',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
+        const Text('Nhóm máu cần hiến', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
+          runSpacing: 8,
           children: [
             _buildBloodTypeChip('Nhóm máu A', Colors.cyan),
             _buildBloodTypeChip('Nhóm máu B', Colors.amber),
@@ -278,58 +245,30 @@ class _BloodDonationBookingState extends State<BloodDonationBooking> {
 
   Widget _buildBloodTypeChip(String label, Color color) {
     return Chip(
-      label: Text(
-        label,
-        style: const TextStyle(color: Colors.white),
-      ),
-      backgroundColor: color,
+      backgroundColor: color.withOpacity(0.2),
+      label: Text(label),
     );
   }
 
-  Widget _buildTimeSlots() {
+  Widget _buildTimeSection(Map<String, dynamic> eventData) {
+    String timeSlot = _formatTimeSlot(eventData['eventStartTime'], eventData['eventEndTime']);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: const [
-            Icon(Icons.access_time, color: Colors.blue),
-            SizedBox(width: 8),
-            Text(
-              'Chọn khung giờ bạn sẽ đến hiến máu',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
+        const Text('Chọn khung giờ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[300]!),
+            border: Border.all(color: Colors.grey.shade300),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Thời gian nhận hồ sơ',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  timeSlot,
-                  style: const TextStyle(
-                    color: Colors.blue,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              Text(timeSlot, style: const TextStyle(fontSize: 16)),
+              const Icon(Icons.arrow_drop_down),
             ],
           ),
         ),
@@ -341,11 +280,7 @@ class _BloodDonationBookingState extends State<BloodDonationBooking> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {
-          setState(() {
-            _currentStep = 1;
-          });
-        },
+        onPressed: () => setState(() => _currentStep = 1),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
         ),
@@ -354,124 +289,145 @@ class _BloodDonationBookingState extends State<BloodDonationBooking> {
     );
   }
 
-  // Widget _buildContinueButton() {
-  //   return ElevatedButton(
-  //     onPressed: () {
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => RegistrationForm(
-  //             selectedDate: selectedDate,
-  //             timeSlot: timeSlot,
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //     child: const Text('Tiếp tục'),
-  //   );
-  // }
-  @override
-  void dispose() {
-    for (var controller in otherControllers.values) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
+  Widget _buildHealthQuestionnaire() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Câu hỏi 1: Đã hiến máu chưa?
+          _buildHealthQuestion(
+            label: '1. Bạn đã hiến máu bao giờ chưa?',
+            value: _formData.healthMetrics['hasDonatedBefore'],
+            onChanged: (bool? value) {
+              setState(() {
+                _formData.healthMetrics['hasDonatedBefore'] = value!;
+              });
+            },
+          ),
 
-  Widget _buildQuestionCard(String title, List<QuestionOption> options) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            ...options.map((option) {
-              if (option.hasTextField) {
-                return Column(
-                  children: [
-                    CheckboxListTile(
-                      title: Text(option.text),
-                      value: answers[option.id] ?? false,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          answers[option.id] = value ?? false;
-                          if (!(value ?? false)) {
-                            otherControllers[option.id]?.clear();
-                          }
-                        });
-                      },
-                    ),
-                    if (answers[option.id] ?? false)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: TextField(
-                          controller: otherControllers[option.id],
-                          decoration: const InputDecoration(
-                            hintText: 'Vui lòng ghi rõ',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                  ],
-                );
-              }
-              return CheckboxListTile(
-                title: Text(option.text),
-                value: answers[option.id] ?? false,
-                onChanged: (bool? value) {
-                  setState(() {
-                    answers[option.id] = value ?? false;
-                  });
-                },
-              );
-            }).toList(),
-          ],
-        ),
+          // Câu hỏi 2: Có bệnh mãn tính không?
+          _buildHealthQuestion(
+            label: '2. Bạn có bệnh mãn tính không?',
+            value: _formData.healthMetrics['hasChronicDiseases'],
+            onChanged: (bool? value) {
+              setState(() {
+                _formData.healthMetrics['hasChronicDiseases'] = value!;
+              });
+            },
+          ),
+
+          // Câu hỏi 3: Có bệnh gần đây không?
+          _buildHealthQuestion(
+            label: '3. Bạn có bệnh gần đây không?',
+            value: _formData.healthMetrics['hasRecentDiseases'],
+            onChanged: (bool? value) {
+              setState(() {
+                _formData.healthMetrics['hasRecentDiseases'] = value!;
+              });
+            },
+          ),
+
+          // Câu hỏi 4: Có triệu chứng không?
+          _buildHealthQuestion(
+            label: '4. Bạn có triệu chứng bệnh gần đây không?',
+            value: _formData.healthMetrics['hasSymptoms'],
+            onChanged: (bool? value) {
+              setState(() {
+                _formData.healthMetrics['hasSymptoms'] = value!;
+              });
+            },
+          ),
+
+          // Câu hỏi 5: Bạn có đang mang thai hoặc cho con bú không?
+          _buildHealthQuestion(
+            label: '5. Bạn có đang mang thai hoặc cho con bú không?',
+            value: _formData.healthMetrics['isPregnantOrNursing'],
+            onChanged: (bool? value) {
+              setState(() {
+                _formData.healthMetrics['isPregnantOrNursing'] = value!;
+              });
+            },
+          ),
+
+          // Câu hỏi 6: Đồng ý xét nghiệm HIV?
+          _buildHealthQuestion(
+            label: '6. Bạn đồng ý xét nghiệm HIV không?',
+            value: _formData.healthMetrics['HIVTestAgreement'],
+            onChanged: (bool? value) {
+              setState(() {
+                _formData.healthMetrics['HIVTestAgreement'] = value!;
+              });
+            },
+          ),
+
+          // Nút gửi form
+          const SizedBox(height: 32),
+          ElevatedButton(
+            onPressed: _submitForm,
+            child: const Text('Gửi Phiếu'),
+          ),
+        ],
       ),
     );
   }
 
-  void _submitForm() async {
-    if (!_validateAnswers()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng trả lời tất cả các câu hỏi')),
-      );
-      return;
-    }
+  Widget _buildHealthQuestion({
+    required String label,
+    required bool value,
+    required ValueChanged<bool?> onChanged,
+  }) {
+    return CheckboxListTile(
+      title: Text(label),
+      value: value,
+      onChanged: onChanged,
+    );
+  }
+
+  Future<void> _submitForm() async {
+    // if (!_validateAnswers()) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text('Bạn chưa đủ điều kiện để đăng ký.')),
+    //   );
+    //   return;
+    // }
 
     try {
-      final userProvider = context.read<UserProvider>();
-      final appointmentProvider = context.read<AppointmentProvider>();
+      // Lấy SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      // Lấy cccd từ SharedPreferences
+      String? jsonString  = prefs.getString('user_data');
+      if (jsonString != null) {
+        // Giải mã chuỗi JSON thành Map
+        Map<String, dynamic> userData = jsonDecode(jsonString);
 
-      if (userProvider.userProfile == null) {
-        throw Exception('User not logged in');
-      }
+        // Truy cập vào trường 'username' trong Map
 
-      final success = await appointmentProvider.saveAppointment(
-        // Sử dụng await ở đây
-        userProvider.userProfile!['cccd'],
-        1, // Replace with actual event ID
-        healthMetrics,
-      );
+        final appointmentProvider = context.read<AppointmentProvider>();
 
-      if (success) {
-        if (!mounted) return;
-        Navigator.pop(context, true);
-      } else {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(appointmentProvider.error ?? 'Unknown error')),
+        final success = await appointmentProvider.saveAppointment(
+          userData['username'], // Sử dụng cccd lấy từ SharedPreferences
+          widget.eventId,
+          _formData.healthMetrics,
         );
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Đặt lịch thành công!')),
+          );
+          Navigator.pop(context, true);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(appointmentProvider.errorMessage ?? 'Có lỗi xảy ra')),
+          );
+        }
       }
+
+
+      // else {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(content: Text(appointmentProvider.error ?? 'Lỗi không xác định')),
+      //   );
+      // }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
@@ -479,141 +435,73 @@ class _BloodDonationBookingState extends State<BloodDonationBooking> {
     }
   }
 
-  bool _validateAnswers() {
-    _updateHealthMetrics();
-    for (var entry in answers.entries) {
-      if (entry.value == null || entry.value == false) {
-        print("Có câu trả lời bị để trống hoặc không hợp lệ.");
-        return false;
-      }
-    }
+  // bool _validateAnswers() {
+  //   // Đặt tiêu chuẩn cho các câu trả lời
+  //   final Map<String, dynamic> healthMetrics = {
+  //     'hasDonatedBlood': false,
+  //     'hasChronicDiseases': false,
+  //     'hasRecentDiseases': false,
+  //     'hasSymptoms': false,
+  //     'isPregnantOrNursing': false,
+  //     'HIVTestAgreement': true,
+  //   };
+  //
+  //   // Lặp qua từng mục trong healthMetrics và so sánh với _formData.healthMetrics
+  //   for (var entry in healthMetrics.entries) {
+  //     // Kiểm tra nếu câu trả lời của người dùng không hợp lệ
+  //     if (!_formData.healthMetrics.containsKey(entry.key)) {
+  //       print("Câu trả lời cho ${entry.key} bị thiếu.");
+  //       return false; // Trả về false nếu câu trả lời không tồn tại
+  //     }
+  //
+  //     // So sánh giá trị của câu trả lời trong _formData với giá trị tiêu chuẩn
+  //     var userAnswer = _formData.healthMetrics[entry.key];
+  //
+  //     // Kiểm tra xem câu trả lời có hợp lệ với giá trị tiêu chuẩn không
+  //     if (userAnswer == null || userAnswer == entry.value) {
+  //       print("Câu trả lời cho ${entry.key} không hợp lệ.");
+  //       return false; // Trả về false nếu có giá trị không hợp lệ
+  //     }
+  //   }
+  //
+  //   // Nếu tất cả câu trả lời hợp lệ
+  //   print("Tất cả câu trả lời hợp lệ.");
+  //   return true;
+  // }
 
-    print("Dữ liệu hợp lệ: $healthMetrics");
-    return true;
+  String _formatTimeSlot(String? startTime, String? endTime) {
+    if (startTime == null || endTime == null) return 'Chưa có thông tin';
+    try {
+      final start = DateFormat('HH:mm:ss').parse(startTime);
+      final end = DateFormat('HH:mm:ss').parse(endTime);
+      return '${DateFormat('HH:mm').format(start)} - ${DateFormat('HH:mm').format(end)}';
+    } catch (e) {
+      print('Error formatting time slot: $e');
+      return 'Chưa có thông tin';
+    }
   }
 
-  Widget _buildRegistrationStep() {
-    // Implement registration form here
-    return Container(
-      child: Column(
-        children: [
-          _buildQuestionCard(
-            '1. Anh/chị đã từng hiến máu chưa?',
-            [
-              QuestionOption('1.1', 'Có'),
-              QuestionOption('1.2', 'Không'),
-            ],
-          ),
-          _buildQuestionCard(
-            '2. Hiện tại, anh/chị có bị các bệnh: viêm khớp, dạ dày, viêm gan/vàng da, bệnh tim, huyết áp thấp/cao, hen, ho kéo dài, bệnh máu, lao?',
-            [
-              QuestionOption('2.1', 'Có'),
-              QuestionOption('2.2', 'Không'),
-              QuestionOption('2.3', 'Bệnh khác', hasTextField: true),
-            ],
-          ),
-          _buildQuestionCard(
-            '3. Trong vòng 12 tháng gần đây, anh/chị có mắc các bệnh và đã được điều trị khỏi',
-            [
-              QuestionOption('3.1',
-                  'Sốt rét, Giang mai, Lao, Viêm não, Phẫu thuật ngoại khoa?'),
-              QuestionOption('3.2', 'Được truyền máu và các chế phẩm máu?'),
-              QuestionOption('3.3', 'Tiêm Vacxin bệnh dại'),
-              QuestionOption('3.4', 'Không'),
-              QuestionOption('3.5', 'Khác (cụ thể)', hasTextField: true),
-            ],
-          ),
-          _buildQuestionCard(
-            '4. Trong vòng 06 tháng gần đây, anh/chị có bị một trong số các triệu chứng sau không',
-            [
-              QuestionOption('4.1', 'Sút cân nhanh không rõ nguyên nhân'),
-              QuestionOption('4.2', 'Nổi hạch kéo dài'),
-              QuestionOption('4.3', 'Chữa răng, châm cứu?'),
-              QuestionOption('4.4', 'Xăm mình, xổ lỗ tai, lỗ mũi'),
-              QuestionOption('4.5', 'Sử dụng ma túy?'),
-              QuestionOption('4.6',
-                  'Quan hệ tình dục với người nhiễm HIV hoặc người có hành vi nguy cơ lây nhiễm HIV'),
-              QuestionOption('4.7', 'Quan hệ tình dục với người cùng giới'),
-              QuestionOption('4.8', 'Không'),
-              QuestionOption('4.9', 'Mục khác', hasTextField: true),
-            ],
-          ),
-          _buildQuestionCard(
-            '5. Trong 01 tháng gần đây anh/chị có',
-            [
-              QuestionOption('5.1',
-                  'Khỏi bệnh sau khi mắc bệnh viêm đường tiết niệu, viêm da nhiễm trùng, viễm phế quản, viêm phổi, viêm sởi, quai bị, Rubella, Khác'),
-              QuestionOption('5.2', 'Tiêm Vacxin phòng bệnh'),
-              QuestionOption('5.3',
-                  'Đi vào vùng có dịch bệnh lưu hành (sốt rét. sốt xuất huyết, Zika,...)'),
-              QuestionOption('5.4', 'Không'),
-              QuestionOption('5.5', 'Mục khác', hasTextField: true),
-            ],
-          ),
-          _buildQuestionCard(
-            '6. Trong 07 tháng gần đây anh/chị có',
-            [
-              QuestionOption('6.1', 'Bị cảm cúm (ho, nhức đầu, sốt,...'),
-              QuestionOption(
-                  '6.2', 'Dùng thuốc kháng sinh, Aspirin, Corticoid?'),
-              QuestionOption('6.3',
-                  'Tiêm Vacxin phòng viêm gan siêu vi B, Human Papilloma Virus'),
-              QuestionOption('6.4', 'Không'),
-              QuestionOption('6.5', 'Mục khác', hasTextField: true),
-            ],
-          ),
-          _buildQuestionCard(
-            '7. Câu hỏi dành cho phụ nữ',
-            [
-              QuestionOption(
-                  '7.1', 'Hiện có thai, hoặc nuôi con dưới 12 tháng tuổi?'),
-              QuestionOption(
-                  '7.2', 'Có kinh nguyệt trong vòng một tuần hay không?'),
-              QuestionOption('7.3', 'Không'),
-            ],
-          ),
-          _buildQuestionCard(
-            '8. Anh/chị có đồng ý xét nghiệm HIV, nhận thông báo và được tư vấn khi kết quả xét nghiệm HIV nghi ngờ hoặc dương tính?',
-            [
-              QuestionOption('8.1', 'Có'),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (_currentStep > 0) {
-                        _currentStep--;
-                      }
-                    });
-                    // Navigator.pop(context); <-- Nếu dùng push mới dùng cái này
-                  },
-                  child: const Text('Quay về'),
-                ),
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
-                  ),
-                  child: const Text('Hoàn thành'),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _formData.selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 30)),
     );
+    if (picked != null && picked != _formData.selectedDate) {
+      setState(() => _formData.selectedDate = picked);
+    }
   }
 }
 
-class QuestionOption {
-  final String id;
-  final String text;
-  final bool hasTextField;
-
-  QuestionOption(this.id, this.text, {this.hasTextField = false});
+class BookingFormData {
+  DateTime selectedDate = DateTime.now();
+  final Map<String, dynamic> healthMetrics = {
+    'hasDonatedBefore': false,
+    'hasChronicDiseases': false,
+    'hasRecentDiseases': false,
+    'hasSymptoms': false,
+    'isPregnantOrNursing': false,
+    'HIVTestAgreement': true,
+  };
 }

@@ -1,4 +1,3 @@
-import 'package:fe_giotmauvang_mobile/screen/User/contactScreen/contact.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/loginScreen/login.dart' as login_screen;
 import 'package:fe_giotmauvang_mobile/screen/User/newsScreen/news.dart';
 import 'package:fe_giotmauvang_mobile/screen/User/QandA/QA.dart';
@@ -81,15 +80,7 @@ class _NavBarCustomState extends State<NavBarCustom> {
                         ),
                       );
                     }),
-                    _buildMenuItem('Liên hệ', onTap: () {
-                      _hideMenu();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ContactScreen(),
-                        ),
-                      );
-                    }),
+                    _buildMenuItem('Liên hệ'),
                   ],
                 ),
               ),
